@@ -22,14 +22,14 @@ class brain:
                 base = np.random.uniform(low=-0.1, high=0.1, size=(1, layers[i+1]))
                 self.bases.append(base)
 
-    # returns true if x, y is the part of the snake else false
+    # возвращает true, если x, y является частью змеи, иначе false
     def isBody(self, x, y, snake):
         for i in range(3, len(snake) - 1):
             if snake[i][0] == x and snake[i][1] == y:
                 return True
         return False
 
-    # next position and direction based on the result passed
+    # следующая позиция и направление на основе переданного результата
     def next_position_direction(self, x, y, direction, result):
         l = self.block
         if direction == 'north':
@@ -61,7 +61,7 @@ class brain:
             else:
                 return (x, y - l), 'north'
 
-    # returns an list with three element indicating the food, body part and boundary based on the direction passed
+    # возвращает список с тремя элементами, указывающими еду, часть тела и границу в зависимости от пройденного направления
     def look_in_direction(self, x, y, dirx, diry, fx, fy, snake):
         distance = 1
         input = [0, 0, 0]
@@ -70,65 +70,65 @@ class brain:
         while((x != 0) and (x != self.width-self.block) and (y != 0) and (y != self.height-self.block)):
             x, y = x + dirx, y + diry
             distance += 1
-            if(not food_found and fx == x and fy == y):
+            if(not food_found and fx == x and fy == y): # нашел хавку
                 input[0] = 1
                 food_found = True
-            if(not body_found and self.isBody(x, y, snake)):
+            if(not body_found and self.isBody(x, y, snake)): # нашел тело
                 input[1] = 1 / distance
                 body_found = True
         input[2] = 1 / distance
         return input
 
-    # makes the input for the neural network by passing all 8 directions to look_in_direction
+    # делает ввод для нейронной сети, передавая все 8 направлений в look_in_direction
     def make_input(self, x, y, fx, fy, snake, direction):
         input = []
-        # look in direction where snake is moving
+        # смотреть в сторону, куда движется змея
         (new_x, new_y), _ = self.next_position_direction(x, y, direction, 1)
         dir_x, dir_y = new_x - x, new_y - y
         input.extend(self.look_in_direction(x, y, dir_x, dir_y, fx, fy, snake))
-        # look in 90 degree left of direction where snake is moving
+        # посмотрите на 90 градусов влево от направления движения змеи
         (new_x, new_y), _ = self.next_position_direction(x, y, direction, 2)
         dir_x, dir_y = new_x - x, new_y - y
         input.extend(self.look_in_direction(x, y, dir_x, dir_y, fx, fy, snake))
-        # look in 90 degree right of direction where snake is moving
+        # посмотрите на 90 градусов вправо от направления движения змеи
         (new_x, new_y), _ = self.next_position_direction(x, y, direction, 3)
         dir_x, dir_y = new_x - x, new_y - y
         input.extend(self.look_in_direction(x, y, dir_x, dir_y, fx, fy, snake))
-        # look in 45 degree left of direction where snake is moving
+        # посмотрите на 45 градусов влево от направления движения змеи
         (tempx, tempy), new_dir = self.next_position_direction(x, y, direction, 1)
         (new_x, new_y), _ = self.next_position_direction(tempx, tempy, new_dir, 2)
         dir_x, dir_y = new_x - x, new_y - y
         input.extend(self.look_in_direction(x, y, dir_x, dir_y, fx, fy, snake))
-        # look in 45 degree right of direction where snake is moving
+        # посмотрите на 45 градусов вправо от направления движения змеи
         (tempx, tempy), new_dir = self.next_position_direction(x, y, direction, 1)
         (new_x, new_y), _ = self.next_position_direction(tempx, tempy, new_dir, 3)
         dir_x, dir_y = new_x - x, new_y - y
         input.extend(self.look_in_direction(x, y, dir_x, dir_y, fx, fy, snake))
-        # look in opposite to the direction where snake is moving
+        # смотреть в противоположном направлении, в котором движется змея
         (tempx, tempy), new_dir = self.next_position_direction(x, y, direction, 2)
         (new_x, new_y), new_dir = self.next_position_direction(tempx, tempy, new_dir, 2)
         (new_x, new_y), _ = self.next_position_direction(new_x, new_y, new_dir, 2)
         dir_x, dir_y = new_x - x, new_y - y
         input.extend(self.look_in_direction(x, y, dir_x, dir_y, fx, fy, snake))
-        # look in 135 degree right of direction where snake is moving
+        # посмотрите на 135 градусов вправо от направления движения змеи
         (tempx, tempy), new_dir = self.next_position_direction(x, y, direction, 3)
         (new_x, new_y), _ = self.next_position_direction(tempx, tempy, new_dir, 3)
         dir_x, dir_y = new_x - x, new_y - y
         input.extend(self.look_in_direction(x, y, dir_x, dir_y, fx, fy, snake))
-        # look in 135 degree left direction where snake is moving
+        # посмотрите на 135 градусов влево, куда движется змея
         (tempx, tempy), new_dir = self.next_position_direction(x, y, direction, 2)
         (new_x, new_y), _ = self.next_position_direction(tempx, tempy, new_dir, 2)
         dir_x, dir_y = new_x - x, new_y - y
         input.extend(self.look_in_direction(x, y, dir_x, dir_y, fx, fy, snake))
         return input
 
-    # feed forward using neural network
+    # прямая связь с использованием нейронной сети
     def decision_from_nn(self, x, y, snake, direction):
         closer_to_food = True
         fx, fy = self.nextFood
         input = self.make_input(x, y, fx, fy, snake, direction)
         input = np.array(input)
-        # feed forward
+
         output = input
         for i in range(len(self.weights) - 1):
             output = self.relu(np.dot(output, self.weights[i]) + self.bases[i])
@@ -138,19 +138,16 @@ class brain:
         result = np.argmax(self.outputs[-1]) + 1
         return result
 
-    # set the next food variable
+    # установить следующую переменную еды
     def setNextFood(self, food):
         self.nextFood = food
 
-    # sigmoid activation functions
     def sigmoid(self, mat):
         return 1.0 / (1.0 + np.exp(-mat))
 
-    # relu activation function
     def relu(self, mat):
         return mat * (mat > 0)
 
-    # softmax function
     def softmax(self, mat):
         mat = mat - np.max(mat)
         return np.exp(mat) / np.sum(np.exp(mat), axis=1)

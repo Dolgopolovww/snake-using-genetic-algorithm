@@ -1,2 +1,3 @@
-# pychache folder ignored
 __pycache__/*
+/venv/
+/.idea/

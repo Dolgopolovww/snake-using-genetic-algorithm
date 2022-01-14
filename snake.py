@@ -26,7 +26,7 @@ class snake:
             self.head_x, self.head_y = 40, 40
         self.list.append((self.head_x, self.head_y))
 
-    # draw the snake on the pygame screen
+    # отрисовка змеи
     def draw(self, screen, color):
         l = self.block
         for (x, y) in self.list:
@@ -34,14 +34,12 @@ class snake:
             draw.rect(screen, color, (x+3, y+3, l-6, l-6))
         return screen
 
-    # returns true if snake is alive else false
     def isAlive(self):
         if not self.crash_wall and not self.crash_body:
             return True
         else:
             return False
 
-    # sets the crash_wall and crash_body if unable to go north accordingly
     def check_north(self):
         if self.head_y - self.block < self.block:
             self.crash_wall = True
@@ -49,7 +47,6 @@ class snake:
             if self.list[i][0] == self.head_x and self.list[i][1] == (self.head_y - self.block):
                 self.crash_body = True
 
-    # move the snake in north
     def move_north(self):
         self.check_north()
         if not (self.crash_wall or self.crash_body):
@@ -58,7 +55,6 @@ class snake:
             self.list.insert(0, (self.head_x, self.head_y))
             self.list.pop()
 
-    # sets the crash_wall and crash_body if unable to go south accordingly
     def check_south(self):
         if self.head_y + self.block >= self.height - self.block:
             self.crash_wall = True
@@ -66,7 +62,6 @@ class snake:
             if self.list[i][0] == self.head_x and self.list[i][1] == (self.head_y + self.block):
                 self.crash_body = True
 
-    # move the snake in south
     def move_south(self):
         self.check_south()
         if not (self.crash_wall or self.crash_body):
@@ -75,7 +70,6 @@ class snake:
             self.list.insert(0, (self.head_x, self.head_y))
             self.list.pop()
 
-    # sets the crash_wall and crash_body if unable to go east accordingly
     def check_east(self):
         if self.head_x + self.block >= self.width - self.block:
             self.crash_wall = True
@@ -83,7 +77,6 @@ class snake:
             if self.list[i][0] == (self.head_x + self.block) and self.list[i][1] == self.head_y:
                 self.crash_body = True
 
-    # move the snake in east
     def move_east(self):
         self.check_east()
         if not (self.crash_wall or self.crash_body):
@@ -92,7 +85,6 @@ class snake:
             self.list.insert(0, (self.head_x, self.head_y))
             self.list.pop()
 
-    # sets the crash_wall and crash_body if unable to go west accordingly
     def check_west(self):
         if self.head_x - self.block < self.block:
             self.crash_wall = True
@@ -100,7 +92,6 @@ class snake:
             if self.list[i][0] == (self.head_x - self.block) and self.list[i][1] == self.head_y:
                 self.crash_body = True
 
-    # move the snake in west
     def move_west(self):
         self.check_west()
         if not (self.crash_wall or self.crash_body):
@@ -109,7 +100,7 @@ class snake:
             self.list.insert(0, (self.head_x, self.head_y))
             self.list.pop()
 
-    # returns the next head position and direction based on the result passed
+    # возвращает следующую позицию головы и направление на основе переданного результата
     def next_position_direction(self, result):
         l = self.block
         x = self.head_x
@@ -144,14 +135,14 @@ class snake:
             else:
                 return (x, y - l), 'north'
 
-    # returns true if x and y doesn't lie on the body of snake
+    # возвращает true, если x и y не лежат на теле змеи
     def onBody(self, x, y):
         for i in range(3, len(self.list) - 1):
             if self.list[i][0] == x and self.list[i][1] == y:
                 return True
         return False
 
-    # increase the size of the snake in the direction given by nn
+    # увеличить размер змеи в направлении, заданном nn
     def increaseSize(self, result):
         pos, dir = self.next_position_direction(result)
         if (pos[0] != 0) and (pos[0] != self.width-self.block) and (pos[1] != 0) and (pos[1] != self.height-self.block) and (not self.onBody(pos[0], pos[1])):
@@ -162,7 +153,7 @@ class snake:
         else:
             return False
 
-    # move the snake based on the result provided
+    # переместить змею в зависимости от предоставленного результата
     def move(self, result):
         if self.direction == 'north':
             if result == 1:

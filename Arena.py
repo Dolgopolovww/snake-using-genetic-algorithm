@@ -15,7 +15,7 @@ class Arena:
 
     def setup(self, screen, color_bg, color):
         self.setup_background(screen, color_bg)
-        # building the horizontal walls
+        # стены по горизонтали
         l = self.block
         for x in range(0, self.width, l):
             y = 0
@@ -24,7 +24,7 @@ class Arena:
             y = self.height - l
             pygame.draw.rect(screen, color, (x, y, l, l), 1)
             pygame.draw.rect(screen, color, (x+3, y+3, l-6, l-6))
-        # building the vertical walls
+        # стены по вертикали
         for y in range(l, self.height-l, l):
             x = 0
             pygame.draw.rect(screen, color, (x, y, l, l), 1)
@@ -36,7 +36,7 @@ class Arena:
 
     def newFood(self, list):
         '''
-        list = snake body parts position list
+        список позиций частей тела змеи
         '''
         found = False
         size = self.block

@@ -13,6 +13,7 @@ if __name__ == "__main__":
     ap.add_argument('-i', '--input', required=True, help='relative path of the saved pickle file')
     ap.add_argument('-s', '--start', type=int, help='relative start of the saved snakes')
     args = vars(ap.parse_args())
+    print(args)
     # loading the saved snakes
     file = open(args['input'], 'rb')
     snakes = pickle.load(file)
